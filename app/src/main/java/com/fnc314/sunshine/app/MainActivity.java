@@ -10,7 +10,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -58,6 +63,32 @@ public class MainActivity extends ActionBarActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
+            String[] forecastArray = {
+                    "Today - Sunny - 88/63",
+                    "Tomorrow - Foggy - 70/40",
+                    "Weds - Cloudy - 72/65",
+                    "Thurs - Asteroids - 75/65",
+                    "Fri - Heavy Rain - 65/56",
+                    "Sat - HELP TRAPPED IN THE WEATHERSTATION - 60/51",
+                    "Sun - Sunny - 80/68"
+            };
+
+            List<String> weekForecast = new ArrayList<String>(Arrays.asList(forecastArray));
+
+            ArrayAdapter<String> mForecastAdapter = new ArrayAdapter<String>(
+                    //  The current context (this fragment's parent activity)
+                    getActivity(),
+                    // ID of list item layout
+                    R.layout.list_item_forecast,
+                    // ID of the textview to populate
+                    R.id.list_item_forecast_textview,
+                    //  Forecast Data
+                    weekForecast);
+            // Find the listView and set the adapter to it from the ArrayAdapter created above
+            // USE THIS METHOD TO ATTACH LIST OF TEXT FROM SERVER
+            ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
+            listView.setAdapter(mForecastAdapter);
             return rootView;
         }
     }
