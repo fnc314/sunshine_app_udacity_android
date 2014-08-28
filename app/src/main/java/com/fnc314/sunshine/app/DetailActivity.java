@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -25,11 +26,6 @@ public class DetailActivity extends ActionBarActivity {
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
         }
-        View v;
-        Intent intent = getIntent();
-        String forecastInformation = intent.getStringExtra(Intent.EXTRA_TEXT);
-        v = (View) findViewById(R.id.detail_text_view);
-        
     }
 
 
@@ -64,6 +60,12 @@ public class DetailActivity extends ActionBarActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
+            Intent intent = getActivity().getIntent();
+            if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
+                String forecastInformation = intent.getStringExtra(Intent.EXTRA_TEXT);
+                ((TextView) rootView.findViewById(R.id.detail_text_view)).setText(forecastInformation);
+            }
+
             return rootView;
         }
     }
