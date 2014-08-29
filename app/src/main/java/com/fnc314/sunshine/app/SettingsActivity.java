@@ -35,7 +35,6 @@ public class SettingsActivity extends PreferenceActivity
         /*
         for all preference attached on OnPreferenceChangeListener so the UI summary can be
         updated when the preference changes.
-        TODO: Add preference
          */
         // Deprecated method ~> targeting Gingerbread devices
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_location_key)));
