@@ -29,12 +29,17 @@ public class SettingsActivity extends PreferenceActivity
         super.onPostCreate(savedInstanceState);
         /*
         add 'general' preference, defined in the XML file
-        TODO: add preferences from XML
-
+        */
+        // Deprecated method ~> targeting Gingerbread devices
+        addPreferencesFromResource(R.xml.pref_general);
+        /*
         for all preference attached on OnPreferenceChangeListener so the UI summary can be
         updated when the preference changes.
         TODO: Add preference
          */
+        // Deprecated method ~> targeting Gingerbread devices
+        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_location_key)));
+        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_units_key)));
     }
 
     /*

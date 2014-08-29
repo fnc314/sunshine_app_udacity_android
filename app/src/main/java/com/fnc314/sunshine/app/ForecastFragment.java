@@ -2,9 +2,11 @@ package com.fnc314.sunshine.app;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -60,8 +62,7 @@ public class ForecastFragment extends Fragment {
         // as you specify a parent activity in AndroidManifest.xml
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
-            FetchWeatherTask fetchWeatherTask = new FetchWeatherTask();
-            fetchWeatherTask.execute("93043");
+            updateWeather();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -70,8 +71,9 @@ public class ForecastFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
+        /*
+        removal of dummy data to allow app to automatically update when launched
         String[] forecastArray = {
                 "Today - Sunny - 88/63",
                 "Tomorrow - Foggy - 70/40",
@@ -82,8 +84,14 @@ public class ForecastFragment extends Fragment {
                 "Sun - Sunny - 80/68"
         };
 
-        List<String> weekForecast = new ArrayList<String>(Arrays.asList(forecastArray));
+        following line is no-longer necessary
+        // List<String> weekForecast = new ArrayList<String>(Arrays.asList(forecastArray));
+        */
 
+        /*
+        The ArrayAdapter will take data from a source
+        and use it to populate the ListView it's attached to
+        */
         mForecastAdapter = new ArrayAdapter<String>(
                 // The current context (this fragment's parent activity)
                 getActivity(),
@@ -91,15 +99,17 @@ public class ForecastFragment extends Fragment {
                 R.layout.list_item_forecast,
                 // ID of the TextView to populate
                 R.id.list_item_forecast_textview,
-                // Forecast Data
-                weekForecast);
+                // Forecast Data ~> replaced to allow app to load new data on start-up
+                new ArrayList<String>());
+
+        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
         // Find the listView and set the adapter to it from the ArrayAdapter created above
         // USE THIS METHOD TO ATTACH LIST OF TEXT FROM SERVER
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(mForecastAdapter);
-
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 String weatherText = mForecastAdapter.getItem(i);
@@ -109,9 +119,24 @@ public class ForecastFragment extends Fragment {
                 detailActivity.putExtra(Intent.EXTRA_TEXT, weatherText);
                 startActivity(detailActivity);
             }
+
         });
 
         return rootView;
+    }
+
+    private void updateWeather() {
+        FetchWeatherTask fetchWeatherTask = new FetchWeatherTask();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String location = prefs.getString(getString(R.string.pref_location_key),
+                getString(R.string.pref_location_default));
+        fetchWeatherTask.execute(location);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateWeather();
     }
 
     public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
@@ -130,7 +155,24 @@ public class ForecastFragment extends Fragment {
 
         // Preparation of Weather High/Low for presentation
         private String formatHighLows(double high, double low) {
-            // We assume user doesn't care about tenths of a degree or smaller increments
+            // Data is fetched in Celsius
+            // If user prefers to see in Fahrenheit, convert values here
+            // We do this rather than fetching data from API again
+            // Will severely reduce data to store in a database
+            SharedPreferences sharedPrefs =
+                    PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String unitType = sharedPrefs.getString(
+                    getString(R.string.pref_units_key),
+                    getString(R.string.pref_units_metric)
+            );
+
+            if (unitType.equals(getString(R.string.pref_units_imperial))) {
+                high = (high * 1.8) + 32;
+                low = (low * 1.8) + 32;
+            } else if (!unitType.equals(getString(R.string.pref_units_metric))) {
+                Log.d(LOG_TAG, "Unit type not found: " + unitType);
+            }
+            // We assume user doesn't care about tenths (or smaller increments) of a degree
             long roundedHigh = Math.round(high);
             long roundedLow = Math.round(low);
             String highLowStr = roundedHigh + "/" +roundedLow;
@@ -139,7 +181,7 @@ public class ForecastFragment extends Fragment {
 
         /**
          * Take the STRING representing the complete forecast in JSON format and pull ou the data
-         * we need to construnct the STRINGs needed for the wireframes
+         * we need to construct the STRINGs needed for the wireframes
          *
          * Fortunately parsing is easy: constructor takes the JSON string and creates the
          * Object hierarchy

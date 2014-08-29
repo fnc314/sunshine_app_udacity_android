@@ -9,6 +9,7 @@
         android:inputType="text"
         android:singleLine="true" />
 
+    <SwitchPreference />
 
 
 </PreferenceScreen>
