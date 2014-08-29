@@ -150,7 +150,7 @@ public class ForecastFragment extends Fragment {
             //  Convert to milliseconds and then to valid date
             Date date = new Date(time * 1000);
             SimpleDateFormat format = new SimpleDateFormat("E, MMM d");
-            return format.format(date).toString();
+            return format.format(date);
         }
 
         // Preparation of Weather High/Low for presentation
@@ -175,7 +175,7 @@ public class ForecastFragment extends Fragment {
             // We assume user doesn't care about tenths (or smaller increments) of a degree
             long roundedHigh = Math.round(high);
             long roundedLow = Math.round(low);
-            String highLowStr = roundedHigh + "/" +roundedLow;
+            String highLowStr = roundedHigh + "/" + roundedLow;
             return highLowStr;
         }
 
@@ -269,7 +269,7 @@ public class ForecastFragment extends Fragment {
                 // Info at http://openweathermap.com/API#forecast
                 URL url = new URL(builtUri.toString());
 
-                Log.v(LOG_TAG, ">>BUILD URL<< " + builtUri.toString());
+                // Log.v(LOG_TAG, ">>BUILD URL<< " + builtUri.toString());
 
                 // Request to OpenWeatherMap and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();

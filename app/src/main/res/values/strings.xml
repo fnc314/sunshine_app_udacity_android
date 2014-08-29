@@ -18,8 +18,9 @@
     <!--Settings/Strings for Unit Setting-->
     <string name="pref_units_label">Temperature Units</string>
     <string name="pref_units_label_metric">Metric</string>
-    <string name="pref_units_label_imperical">Imperical</string>
+    <string name="pref_units_label_imperial">Imperial</string>
     <string name="pref_units_key" translatable="false">units</string>
     <string name="pref_units_metric" translatable="false">metric</string>
     <string name="pref_units_imperial" translatable="false">imperial</string>
+
 </resources>
